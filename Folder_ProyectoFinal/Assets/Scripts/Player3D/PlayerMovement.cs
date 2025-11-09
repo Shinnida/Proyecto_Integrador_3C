@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     public float speed = 5f;
-    public float JumpForce = 7;
+   // public Vector3 JumpForce = 7;
 
     private Rigidbody rb;
     private CharacterController controller;
@@ -22,8 +22,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnEnable()
     {
-        controlls.Player3D.Jump.performed += 
-        controlls.Player3D.Enable();
+      //  controlls.Player3D.Jump.performed += 
+        //controlls.Player3D.Enable();
         controlls.Player3D.Move.performed += OnMovePerformed;
         controlls.Player3D.Move.canceled += OnMoveCanceled;
     }
