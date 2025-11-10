@@ -1,65 +1,86 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
-    public float speed = 5f;
-   // public Vector3 JumpForce = 7;
-
     private Rigidbody rb;
-    private CharacterController controller;
-    private PlayerControls controlls;
+    private PlayerControls controls;
     private Vector2 moveInput;
-    private Vector3 velocity;
 
+    [Header("Attributes")]
+    [SerializeField] private float moveSpeed = 10f;
+    [SerializeField] private float maxSpeed = 5f;
+    [SerializeField] private float jumpForce = 5f;
+
+    [Header("GroundCheck")]
+    [SerializeField] Transform groundCheck;
+    [SerializeField] private float groundDistance;
+    [SerializeField] private LayerMask groundMask;
+
+    private bool isGround;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        controller = GetComponent<CharacterController>();
-        controlls = new PlayerControls(); 
+        controls = new PlayerControls();
+    }
+
+    private void FixedUpdate()
+    {
+        MovePlayer();
+        GroundChech();
     }
 
     private void OnEnable()
     {
-      //  controlls.Player3D.Jump.performed += 
-        //controlls.Player3D.Enable();
-        controlls.Player3D.Move.performed += OnMovePerformed;
-        controlls.Player3D.Move.canceled += OnMoveCanceled;
+        controls.Enable();
+        controls.Player.Move.performed += OnMovePerformed;
+        controls.Player.Move.canceled += OnMoveCanceled;
+        controls.Player.Jump.performed += OnJump;
     }
-
     private void OnDisable()
     {
-        controlls.Player3D.Move.performed -= OnMovePerformed;
-        controlls.Player3D.Move.canceled -= OnMoveCanceled;
-        controlls.Player3D.Disable();
+        controls.Disable();
+        controls.Player.Move.performed -= OnMovePerformed;
+        controls.Player.Move.canceled -= OnMoveCanceled;
+        controls.Player.Jump.performed -= OnJump;
     }
 
-    private void OnMovePerformed(InputAction.CallbackContext context)
+    private void OnMovePerformed(InputAction.CallbackContext ctx)
     {
-        moveInput = context.ReadValue<Vector2>();
-    }
+        moveInput = ctx.ReadValue<Vector2>();
+    }    
 
-    private void OnMoveCanceled(InputAction.CallbackContext context)
+    private void OnMoveCanceled(InputAction.CallbackContext ctx)
     {
         moveInput = Vector2.zero;
     }
 
-    private void Update()
+    private void MovePlayer()
     {
-        JumpPlayer();
-        MovePlayer();
+
+        Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y);
+
+        rb.AddForce(move * moveSpeed, ForceMode.Impulse);
+
+        Vector3 horizontalVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        if (horizontalVelocity.magnitude > maxSpeed)
+        {
+            Vector3 limitedVelocity = horizontalVelocity.normalized * maxSpeed;
+            rb.linearVelocity = new Vector3(limitedVelocity.x, rb.linearVelocity.y, limitedVelocity.z);
+        }
     }
 
-    public void MovePlayer()
+    private void OnJump(InputAction.CallbackContext context)
     {
-        Vector3 move = new Vector3(moveInput.x, 0, moveInput.y);
-        controller.Move(move * speed * Time.deltaTime);
+        if (isGround)
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
     }
 
-    public void JumpPlayer()
+    private void GroundChech()
     {
-        Vector3 jump = new Vector3(0, 0, moveInput.y);
-        
+        isGround = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
     }
 }

@@ -13,4 +13,4 @@ public class CreatureDataSO : ScriptableObject
     [Header("Media")]
     public Sprite icon;
     public AudioClip sound;
-}
+}   
