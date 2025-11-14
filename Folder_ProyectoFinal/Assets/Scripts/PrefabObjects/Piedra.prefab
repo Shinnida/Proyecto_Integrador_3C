@@ -244,5 +244,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minIntensity: 0.5
-  maxIntensity: 200
+  maxIntensity: 100
   speed: 2

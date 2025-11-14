@@ -24,7 +24,6 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         controls = new PlayerControls();
     }
-
     private void FixedUpdate()
     {
         MovePlayer();
