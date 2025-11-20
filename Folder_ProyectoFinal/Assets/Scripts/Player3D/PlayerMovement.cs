@@ -24,13 +24,17 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float groundDistance;
     [SerializeField] private LayerMask groundMask;
 
+    [SerializeField] private GameObject interactText;
+    [SerializeField] private LayerMask interactionMask;
+
     private bool isGround;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         controls = new PlayerControls();
-        inventory = FindObjectOfType<InventoryManager>(); // Encuentra el gestor de inventario en la escena
+        inventory = FindFirstObjectByType<InventoryManager>(); // Encuentra el gestor de inventario en la escena
+        //busca todo en la jerarquia y encuentra el objeto con ese script "FindFirstObjectByType"
 
 
 
@@ -41,8 +45,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        // Usamos Update para el Raycast y la detección de input de interacción, 
-        // ya que la detección es por frame y no física.
         CheckForInteractable();
     }
 
@@ -120,8 +122,16 @@ public class PlayerMovement : MonoBehaviour
     // Lógica del Raycast y Recogida
     private void CheckForInteractable()
     {
-        // Dibuja el rayo en la escena (solo visible en el editor)
-        Debug.DrawRay(playerCamera.transform.position, playerCamera.transform.forward * interactionDistance, Color.red);
+        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, interactionDistance, interactionMask))
+        {
+            Debug.DrawRay(playerCamera.transform.position, playerCamera.transform.forward * interactionDistance, Color.green);
+            interactText.SetActive(true);
+        }
+        else
+        {
+            Debug.DrawRay(playerCamera.transform.position, playerCamera.transform.forward * interactionDistance, Color.red);
+            interactText.SetActive(false);
+        }
     }
 
     private void TryPickUpObject()
@@ -138,10 +148,12 @@ public class PlayerMovement : MonoBehaviour
                 // Si lo tiene, lo añadimos al inventario y lo "recogemos" (destruimos en este caso simple)
                 if (inventory != null)
                 {
-                    inventory.AddItem(item.itemName);
+                    inventory.AddItem(item. ItemName);
                     item.PickUp();
                 }
             }
         }
     }
+
+
 }

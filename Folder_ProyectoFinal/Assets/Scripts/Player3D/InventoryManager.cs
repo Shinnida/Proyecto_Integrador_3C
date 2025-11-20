@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class InventoryManager : MonoBehaviour
 {
-    // Usaremos una lista simple para el inventario
-    public List<string> items = new List<string>();
+    [SerializeField] private List<string> items = new List<string>();
 
     public void AddItem(string itemName)
     {
