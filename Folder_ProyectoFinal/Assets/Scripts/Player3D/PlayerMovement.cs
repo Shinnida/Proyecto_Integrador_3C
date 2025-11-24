@@ -33,14 +33,19 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         controls = new PlayerControls();
-        inventory = FindFirstObjectByType<InventoryManager>(); // Encuentra el gestor de inventario en la escena
-        //busca todo en la jerarquia y encuentra el objeto con ese script "FindFirstObjectByType"
-
-
 
         // Bloquea el cursor en el centro de la pantalla para la funcionalidad del raycast
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+    private void Start()
+    {
+        inventory = InventoryManager.Instance;
+
+        if (inventory == null)
+        {
+            Debug.LogError("InventoryManager no existe en la escena.");
+        }
     }
 
     private void Update()
@@ -148,12 +153,10 @@ public class PlayerMovement : MonoBehaviour
                 // Si lo tiene, lo añadimos al inventario y lo "recogemos" (destruimos en este caso simple)
                 if (inventory != null)
                 {
-                    inventory.AddItem(item. ItemName);
+                    inventory.AddItem(item.ItemName);
                     item.PickUp();
                 }
             }
         }
     }
-
-
 }
